@@ -11,7 +11,7 @@ app.get('/listPlayers', function (req, res) {
     });
 })
 
-app.get('/playerData/:name', function (req, res) {
+app.get('/player/:name', function (req, res) {
     // get player info based on name
     fs.readFile( __dirname + "/" + "players.json", 'utf8', function (err, data) {
         const players = JSON.parse(data);
@@ -30,11 +30,11 @@ app.get('/playerData/:name', function (req, res) {
 //     res.end(JSON.stringify(positionResponse));
 // });
 
-app.get("/position", async (req, res) => {
+app.get("/player/:name/position", async (req, res) => {
     const requestOptions = {
         method: 'GET',
     };
-    let stat = await fetch("https://balldontlie.io/api/v1/players?search=lebron", requestOptions);
+    let stat = await fetch("https://balldontlie.io/api/v1/players?search="+req.params.name, requestOptions);
 
     let finalStat = await stat.json();
     finalStat = finalStat.data[0].position;
