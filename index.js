@@ -1,80 +1,47 @@
 const express = require('express');
 const app = express();
-const PORT = 9090;
+const fs = require("fs");
+const fetch = require("node-fetch");
+const {response} = require("express");
 
-app.use(express.json())
-
-app.listen(
-    PORT,
-    () => console.log(`it's alive on http://localhost:${PORT}`)
-)
-
-app.get('/', (req, res) => {
-    res.status(200).send(
-
-        {
-            'kobe': {
-                'id': 1,
-                'name': 'Kobe Bryant',
-                'points': '33,643',
-                'rings': '5'
-            },
-            'lebron': {
-                'id': 2,
-                'name': 'LeBron James',
-                'points': '38,450',
-                'rings': '4'
-            },
-            'mike': {
-                'id': 3,
-                'name': 'Michael Jordan',
-                'points': '32,292',
-                'rings': '6'
-            },
-            'kd': {
-                'id': 4,
-                'name': 'Kevin Durant',
-                'points': '26,764',
-                'rings': '2'
-            },
-            'harden': {
-                'id': 4,
-                'name': 'James Harden',
-                'points': '24,594',
-                'rings': '0'
-            },
-            'paulpierce': {
-                'id': 4,
-                'name': 'Paul Pierce',
-                'points': '26,397',
-                'rings': '1'
-            },
-            'shaq': {
-                'id': 4,
-                'name': 'Shaquille O\'Neal',
-                'points': '28,596',
-                'rings': '4'
-            },
-            'russ': {
-                'id': 4,
-                'name': 'Russel Westbrook',
-                'points': '24,246',
-                'rings': '0'
-            }
-        }
-    )
+app.get('/listPlayers', function (req, res) {
+    fs.readFile( __dirname + "/" + "players.json", 'utf8', function (err, data) {
+        console.log( data );
+        res.end( data );
+    });
 })
 
-//
-// app.post('/player/:id', (req,res) => {
-//     const { id } = req.params;
-//     const { picture } = req.body;
-//
-//     if (!picture) {
-//         res.status(418).send({message: 'We need a picture!'})
-//     }
-//
-//     res.send({
-//         player: `player with your ${picture} and ID of ${id}`,
-//     })
+app.get('/playerData/:name', function (req, res) {
+    // get player info based on name
+    fs.readFile( __dirname + "/" + "players.json", 'utf8', function (err, data) {
+        const players = JSON.parse(data);
+        const player = players[req.params.name];
+        console.log( player );
+        res.end( JSON.stringify(player));
+    });
+});
+
+// app.get('/:name/position', async function (req, res) {
+//     const requestOptions = {
+//         method: 'GET',
+//     };
+//     const url = "https://balldontlie.io/api/v1/players?search="+req.params.name
+//     const positionResponse = await JSON.fetch(url, requestOptions);
+//     res.end(JSON.stringify(positionResponse));
 // });
+
+app.get("/position", async (req, res) => {
+    const requestOptions = {
+        method: 'GET',
+    };
+    console.log('Sending Ball dontLie Req');
+    let stat = await fetch("https://balldontlie.io/api/v1/players?search=lebron", requestOptions);
+    const finalStat = await stat.json();
+    console.log(finalStat);
+    //res.end(await stat.json());
+    res.end('test');
+});
+
+const server = app.listen(8081, function () {
+    console.log("Example app listening at http://127.0.0.1:8081");
+});
