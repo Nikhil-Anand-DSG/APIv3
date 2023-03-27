@@ -34,13 +34,12 @@ app.get("/position", async (req, res) => {
     const requestOptions = {
         method: 'GET',
     };
-    console.log('Sending Ball dontLie Req');
     let stat = await fetch("https://balldontlie.io/api/v1/players?search=lebron", requestOptions);
+
     let finalStat = await stat.json();
     finalStat = finalStat.data[0].position;
-    console.log(finalStat);
-    //res.end(await stat.json());
-    res.write(JSON.stringify(finalStat));
+
+    res.write(finalStat);
     res.end();
 });
 
