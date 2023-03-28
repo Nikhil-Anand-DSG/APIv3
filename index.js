@@ -21,14 +21,20 @@ app.get('/player/:name', function (req, res) {
     });
 });
 
-// app.get('/:name/position', async function (req, res) {
-//     const requestOptions = {
-//         method: 'GET',
-//     };
-//     const url = "https://balldontlie.io/api/v1/players?search="+req.params.name
-//     const positionResponse = await JSON.fetch(url, requestOptions);
-//     res.end(JSON.stringify(positionResponse));
-// });
+app.get("/player/:name/seasonStats", async (req, res) => {
+        const requestOptions = {
+            method: 'GET',
+        };
+        let playerInfo = await fetch("https://balldontlie.io/api/v1/players?search="+req.params.name, requestOptions);
+        let playerID = await playerInfo.json();
+        playerID = playerID.data[0].id;
+
+        const playerSeasonStatsReq = await fetch("https://balldontlie.io/api/v1/season_averages?player_ids[]="+playerID, requestOptions);
+        const playerSeasonStats = await playerSeasonStatsReq.json();
+
+        res.write(JSON.stringify(playerSeasonStats.data[0]));
+        res.end();
+});
 
 app.get("/player/:name/position", async (req, res) => {
     const requestOptions = {
