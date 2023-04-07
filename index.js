@@ -14,7 +14,7 @@ app.get("/player/:name/seasonStats", async (req, res) => {
         const playerSeasonStats = await playerSeasonStatsReq.json();
 
 
-        res.write("{\""+req.params.name+"\": ["+JSON.stringify(playerInfoJson.data[0]).substring(0,JSON.stringify(playerInfoJson.data[0]).length-1)+", "+JSON.stringify(playerSeasonStats.data[0]).substring(1)+"]}");
+        res.write("{\""+"data"+"\": ["+JSON.stringify(playerInfoJson.data[0]).substring(0,JSON.stringify(playerInfoJson.data[0]).length-1)+", "+JSON.stringify(playerSeasonStats.data[0]).substring(1)+"]}");
         res.end();
 });
 
