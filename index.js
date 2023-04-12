@@ -8,13 +8,18 @@ app.get("/player/:name/seasonStats", async (req, res) => {
         };
         let playerInfo = await fetch("https://balldontlie.io/api/v1/players?search="+req.params.name, requestOptions);
         let playerInfoJson = await playerInfo.json();
-        let playerID = playerInfoJson.data[0].id;
+        try {
+                let playerID = playerInfoJson.data[0].id;
 
-        const playerSeasonStatsReq = await fetch("https://balldontlie.io/api/v1/season_averages?player_ids[]="+playerID, requestOptions);
-        const playerSeasonStats = await playerSeasonStatsReq.json();
+                const playerSeasonStatsReq = await fetch("https://balldontlie.io/api/v1/season_averages?player_ids[]=" + playerID, requestOptions);
+                const playerSeasonStats = await playerSeasonStatsReq.json();
 
 
-        res.write("{\""+"data"+"\": ["+JSON.stringify(playerInfoJson.data[0]).substring(0,JSON.stringify(playerInfoJson.data[0]).length-1)+", "+JSON.stringify(playerSeasonStats.data[0]).substring(1)+"]}");
+                res.write("{\"" + "data" + "\": [" + JSON.stringify(playerInfoJson.data[0]).substring(0, JSON.stringify(playerInfoJson.data[0]).length - 1) + ", " + JSON.stringify(playerSeasonStats.data[0]).substring(1) + "]}");
+        }
+        catch (error) {
+                res.write("{\"" + "data" + "\": [{" +"\"first_name\": \"No Player Found\"" + "}]}");
+        }
         res.end();
 });
 
