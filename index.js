@@ -1,80 +1,28 @@
 const express = require('express');
 const app = express();
-const PORT = 9090;
+const fetch = require("node-fetch");
 
-app.use(express.json())
+app.get("/player/:name/seasonStats", async (req, res) => {
+        const requestOptions = {
+            method: 'GET',
+        };
+        let playerInfo = await fetch("https://balldontlie.io/api/v1/players?search="+req.params.name, requestOptions);
+        let playerInfoJson = await playerInfo.json();
+        try {
+                let playerID = playerInfoJson.data[0].id;
 
-app.listen(
-    PORT,
-    () => console.log(`it's alive on http://localhost:${PORT}`)
-)
+                const playerSeasonStatsReq = await fetch("https://balldontlie.io/api/v1/season_averages?player_ids[]=" + playerID, requestOptions);
+                const playerSeasonStats = await playerSeasonStatsReq.json();
 
-app.get('/', (req, res) => {
-    res.status(200).send(
 
-        {
-            'kobe': {
-                'id': 1,
-                'name': 'Kobe Bryant',
-                'points': '33,643',
-                'rings': '5'
-            },
-            'lebron': {
-                'id': 2,
-                'name': 'LeBron James',
-                'points': '38,450',
-                'rings': '4'
-            },
-            'mike': {
-                'id': 3,
-                'name': 'Michael Jordan',
-                'points': '32,292',
-                'rings': '6'
-            },
-            'kd': {
-                'id': 4,
-                'name': 'Kevin Durant',
-                'points': '26,764',
-                'rings': '2'
-            },
-            'harden': {
-                'id': 4,
-                'name': 'James Harden',
-                'points': '24,594',
-                'rings': '0'
-            },
-            'paulpierce': {
-                'id': 4,
-                'name': 'Paul Pierce',
-                'points': '26,397',
-                'rings': '1'
-            },
-            'shaq': {
-                'id': 4,
-                'name': 'Shaquille O\'Neal',
-                'points': '28,596',
-                'rings': '4'
-            },
-            'russ': {
-                'id': 4,
-                'name': 'Russel Westbrook',
-                'points': '24,246',
-                'rings': '0'
-            }
+                res.write("{\"" + "data" + "\": [" + JSON.stringify(playerInfoJson.data[0]).substring(0, JSON.stringify(playerInfoJson.data[0]).length - 1) + ", " + JSON.stringify(playerSeasonStats.data[0]).substring(1) + "]}");
         }
-    )
-})
+        catch (error) {
+                res.write("{\"" + "data" + "\": [{" +"\"first_name\": \"No Player Found\"" + "}]}");
+        }
+        res.end();
+});
 
-//
-// app.post('/player/:id', (req,res) => {
-//     const { id } = req.params;
-//     const { picture } = req.body;
-//
-//     if (!picture) {
-//         res.status(418).send({message: 'We need a picture!'})
-//     }
-//
-//     res.send({
-//         player: `player with your ${picture} and ID of ${id}`,
-//     })
-// });
+app.listen(8081, function () {
+    console.log("Example app listening at http://127.0.0.1:8081");
+});
