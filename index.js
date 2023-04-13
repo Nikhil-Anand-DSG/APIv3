@@ -6,6 +6,7 @@ app.get("/player/:name/seasonStats", async (req, res) => {
         const requestOptions = {
             method: 'GET',
         };
+        //TODO: limit player info result to 1 (loop through data removing based an anything null)
         let playerInfo = await fetch("https://balldontlie.io/api/v1/players?search="+req.params.name, requestOptions);
         let playerInfoJson = await playerInfo.json();
         try {
