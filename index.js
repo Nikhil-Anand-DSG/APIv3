@@ -2,10 +2,18 @@ const express = require('express');
 const app = express();
 const fetch = require("node-fetch");
 
+const cors = require("cors");
+app.use(cors({
+        origin: 'https://remoteaccess--startling-kelpie-5c183f.netlify.app/'
+}));
+
 app.get("/player/:name/seasonStats", async (req, res) => {
         const requestOptions = {
             method: 'GET',
         };
+        const headers = {'Content-Type':'application/json',
+                'Access-Control-Allow-Origin':'*',
+                'Access-Control-Allow-Methods':'POST,PATCH,OPTIONS'}
         //TODO: limit player info result to 1 (loop through data removing based an anything null)
         let playerInfo = await fetch("https://balldontlie.io/api/v1/players?search="+req.params.name, requestOptions);
         let playerInfoJson = await playerInfo.json();
@@ -14,14 +22,22 @@ app.get("/player/:name/seasonStats", async (req, res) => {
 
                 const playerSeasonStatsReq = await fetch("https://balldontlie.io/api/v1/season_averages?player_ids[]=" + playerID, requestOptions);
                 const playerSeasonStats = await playerSeasonStatsReq.json();
+                //console.log(JSON.stringify(playerSeasonStats).substring(0,JSON.stringify(playerSeasonStats).indexOf('}')+1))
+                //console.log('\n\n\n')
+                let indexHelperInfo = JSON.stringify(playerInfoJson.data[0]);
+                let indexHelperStats = JSON.stringify(playerSeasonStats.data[0]);
 
-
-                res.write("{\"" + "data" + "\": [" + JSON.stringify(playerInfoJson.data[0]).substring(0, JSON.stringify(playerInfoJson.data[0]).length - 1) + ", " + JSON.stringify(playerSeasonStats.data[0]).substring(1) + "]}");
+                res.write("{\"" + "data" + "\": [" + indexHelperInfo.substring(0, indexHelperInfo.length - 1) + ", " + indexHelperStats.substring(1) + "]}");
         }
         catch (error) {
                 res.write("{\"" + "data" + "\": [{" +"\"first_name\": \"No Player Found\"" + "}]}");
         }
-        res.end();
+        const response = {
+                statusCode: 200,
+                headers:headers,
+                body: res.end(),
+        };
+        return response;
 });
 
 app.listen(8081, function () {
