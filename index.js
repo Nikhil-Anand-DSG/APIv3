@@ -20,7 +20,7 @@ app.get("/player/:name/seasonStats", async (req, res) => {
         try {
                 let playerID = playerInfoJson.data[0].id;
 
-                const playerSeasonStatsReq = await fetch("https://balldontlie.io/api/v1/season_averages?player_ids[]=" + playerID, requestOptions);
+                const playerSeasonStatsReq = await fetch("https://balldontlie.io/api/v1/season_averages?season=2022&player_ids[]=" + playerID, requestOptions);
                 const playerSeasonStats = await playerSeasonStatsReq.json();
                 //console.log(JSON.stringify(playerSeasonStats).substring(0,JSON.stringify(playerSeasonStats).indexOf('}')+1))
                 //console.log('\n\n\n')
